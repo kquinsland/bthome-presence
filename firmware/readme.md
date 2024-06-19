@@ -90,11 +90,10 @@ Given:
 We get a self-discharge rate of:
 
 $$
-\text{Rechargeable battery monthly self-discharge} = 40 \, \text{mAh} \times 0.05 = 2 \, \text{mAh/month}
-
-\newline
-
+\begin{aligned}
+\text{Rechargeable battery monthly self-discharge} = 40 \, \text{mAh} \times 0.05 = 2 \, \text{mAh/month} \\
 \text{Non-rechargeable battery monthly self-discharge} = 250 \, \text{mAh} \times 0.05 = 12.5 \, \text{mAh/month}
+\end{aligned}
 $$
 
 Given:
@@ -104,35 +103,29 @@ Given:
 We get a current draw of:
 
 $$
-\text{Load per hour} = 8.63 \, \mu\text{A} \times \frac{5}{60} \times 12 = 8.63 \, \mu\text{A/hour}
-
-\newline
-
-\text{Load per day} = 8.63 \, \mu\text{A/hour} \times 24 \, \text{hours} = 207.12 \, \mu\text{Ah/day}
-
-\newline
-
+\begin{aligned}
+\text{Load per hour} = 8.63 \, \mu\text{A} \times \frac{5}{60} \times 12 = 8.63 \, \mu\text{A/hour} \\
+\text{Load per day} = 8.63 \, \mu\text{A/hour} \times 24 \, \text{hours} = 207.12 \, \mu\text{Ah/day}\\
 \text{Load per month} = 207.12 \, \mu\text{Ah/day} \times 30 \, \text{days} = 6213.6 \, \mu\text{Ah/month} = 6.2136 \, \text{mAh/month}
+\end{aligned}
 $$
 
 Which lets us calculate the total monthly consumption:
 
 $$
-\text{Total monthly consumption (rechargeable)} = 2 \, \text{mAh} \, (\text{self-discharge}) + 6.2136 \, \text{mAh} \, (\text{load}) = 8.2136 \, \text{mAh/month}
-
-\newline
-
+\begin{aligned}
+\text{Total monthly consumption (rechargeable)} = 2 \, \text{mAh} \, (\text{self-discharge}) + 6.2136 \, \text{mAh} \, (\text{load}) = 8.2136 \, \text{mAh/month} \\
 \text{Total monthly consumption (non-rechargeable)} = 12.5 \, \text{mAh} \, (\text{self-discharge}) + 6.2136 \, \text{mAh} \, (\text{load}) = 18.7136 \, \text{mAh/month}
+\end{aligned}
 $$
 
 Which lets us calculate the expected battery life:
 
 $$
-\text{Battery life (rechargeable)} = \frac{\text{Battery capacity}}{\text{Total monthly consumption}} = \frac{40 \, \text{mAh}}{8.2136 \, \text{mAh/month}} \approx 4.87 \, \text{months}
-
-\newline
-
+\begin{aligned}
+\text{Battery life (rechargeable)} = \frac{\text{Battery capacity}}{\text{Total monthly consumption}} = \frac{40 \, \text{mAh}}{8.2136 \, \text{mAh/month}} \approx 4.87 \, \text{months} \\
 \text{Battery life (non-rechargeable)} = \frac{\text{Battery capacity}}{\text{Total monthly consumption}} = \frac{250 \, \text{mAh}}{18.7136 \, \text{mAh/month}} \approx 13.36 \, \text{months}
+\end{aligned}
 $$
 
 ## Development
