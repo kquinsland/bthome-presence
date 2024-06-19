@@ -1,0 +1,19 @@
+[target.'cfg(all(target_arch = "arm", target_os = "none"))']
+# supported values from: `probe-rs chip list`
+runner = "probe-rs run --chip nRF52832_xxAA --disable-progressbars"
+
+# Note: this breaks soft-device but is otherwise a neat tool for catching stack overflows
+# see: https://github.com/knurling-rs/flip-link
+# linker = "flip-link"
+
+[build]
+# Note: the `HF` at the end of eabihf is for hardware floating point
+# Not all members of the nrf52 family support hardware floating point!
+# nRF52810: no hardware floating point
+# nRF52832: hardware floating point
+# so the target may need to be adjusted depending on the chip targeted
+#target = "thumbv7em-none-eabi"
+target = "thumbv7em-none-eabihf"
+
+[env]
+DEFMT_LOG = "trace"

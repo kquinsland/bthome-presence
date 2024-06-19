@@ -1,0 +1,129 @@
+---
+##
+# Tests and builds firmware image files
+name: Tests and release
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*.*.*"
+  pull_request:
+
+env:
+  GITHUB_TOKEN: ${{ github.token }}
+  RUST_TARGET: thumbv7em-none-eabihf
+  SHORT_SHA: "NOTSET"
+
+defaults:
+  run:
+    # Everything happens relative to the firmware directory
+    working-directory: firmware
+
+jobs:
+  formatting:
+    name: format/lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: get rust
+        # Will use rustfmt later; TODO: may need clippy as well?
+        run: rustup toolchain install stable --profile minimal --no-self-update --component rustfmt --target ${{ env.RUST_TARGET }}
+
+      - name: Rustfmt Check
+        uses: actions-rust-lang/rustfmt@v1
+        with:
+          # TODO: put a toolchain.toml in root which specifies the target and the like?
+          # See: https://rust-lang.github.io/rustup/overrides.html#the-toolchain-file
+          manifest-path: firmware/Cargo.toml
+
+  # Currently disabled; there's something _very odd_ about no_std and tests.
+  # Lots of people getting the same "can't find crate for `test`" error that I can't shake.
+  ##
+  # TODO: obviously, re-enable tests because they're important!
+  ##
+  # test:
+  #   name: cargo test
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #
+  #     - name: get rust
+  #       run: rustup toolchain install stable --profile minimal --no-self-update --component rustfmt --target ${{ env.RUST_TARGET }}
+  #   
+  #       # For now, only test "main" features. Eventually this should turn into a matrix?
+  #     - name: cargo test
+  #       run: cargo test --bin ble_advertise_timer --features nrf52832 --features with-softdevice
+
+  build-and-release:
+    name: "Build main firmware image files"
+    needs:
+      # I know it's not the same as a proper test suite, but if the code isn't even formatted properly... we can just assume that it's not going to work.
+      - formatting
+    runs-on: "ubuntu-latest"
+    # Uploading artifacts requires write permissions
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Add SHORT_SHA env property with commit short sha
+        run: |
+          echo "SHORT_SHA=`echo ${GITHUB_SHA} | cut -c1-8`"
+          echo "SHORT_SHA=`echo ${GITHUB_SHA} | cut -c1-8`" >> $GITHUB_ENV
+
+      - name: get rust
+        # Will use rustfmt later; TODO: may need clippy as well?
+        run: rustup toolchain install stable --profile minimal --no-self-update --component rustfmt --target ${{ env.RUST_TARGET }}
+
+      - name: Cache cargo & target directories
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: |
+            firmware
+
+      # Only build main app in fat image
+      - name: build
+        env:
+          RELEASE_VERSION: ${{ env.SHORT_SHA }}
+        run: |
+          echo "Building version ${{ env.SHORT_SHA }} for target: ${{ env.RUST_TARGET }}"
+          cargo build --bin ble_advertise_timer --features nrf52832 --features with-softdevice --release
+
+      # Cargo creates a binary named after the main file.
+      # We want to rename it to something more descriptive and explicit to make it clear that
+      #   the binary attached to the release is the combined/full-fat image.
+      # Also compute hash of the binary to be attached to the release for verification.
+      - name: Rename, hash and bundle firmware image
+        working-directory: firmware/target/${{ env.RUST_TARGET }}/release
+        if: |
+          ( startsWith( github.ref, 'refs/tags/v' ) ||
+            github.ref == 'refs/tags/test-release' )
+
+        run: |
+          mv ble_advertise_timer ble_advertise_timer.combined.bin
+          shasum -a 256 ble_advertise_timer.combined.bin > ble_advertise_timer.combined.bin.sha256
+          zip ble_advertise_timer.combined.zip ble_advertise_timer.combined.bin ble_advertise_timer.combined.bin.sha256
+
+      # If test, publish artifacts but don't create a formal release
+      - name: Publish test release artifacts
+        if:  |
+          github.ref == 'refs/tags/test-release'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ble_advertise_timer
+          # For debugging purposes, we include everything... even if the zip _should_ only contain the binary and hash.
+          path: |
+            firmware/target/${{ env.RUST_TARGET }}/release/*.zip
+            firmware/target/${{ env.RUST_TARGET }}/release/*.bin
+            firmware/target/${{ env.RUST_TARGET }}/release/*.sha256
+
+      # Otherwise, create a formal release
+      - name: Publish GitHub release
+        uses: softprops/action-gh-release@v2
+        if: |
+          startsWith( github.ref, 'refs/tags/v' )
+        with:
+          draft: true
+          files: |
+            firmware/target/${{ env.RUST_TARGET }}/release/*.zip

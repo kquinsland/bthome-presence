@@ -1,0 +1,57 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		}
+	],
+	"settings": {
+		"cSpell.words": [
+			"Allterco",
+			"arrayvec",
+			"bthome",
+			"BTHPT",
+			"clippy",
+			"codegen",
+			"ctiv",
+			"Dcdc",
+			"DCEE",
+			"defmt",
+			"DUOWEISI",
+			"eabi",
+			"eabihf",
+			"gatts",
+			"gpiote",
+			"heapless",
+			"intelhex",
+			"Irqs",
+			"LYWSD",
+			"mosi",
+			"Nonconnectable",
+			"Nonscannable",
+			"periph",
+			"Prescaler",
+			"progressbars",
+			"RSSI",
+			"rustc",
+			"rustfmt",
+			"rustup",
+			"Saadc",
+			"softdevice",
+			"softprops",
+			"spim",
+			"themo",
+			"thumbv"
+		],
+		"rust-analyzer.check.command": "clippy"
+	},
+	"extensions": {
+		"recommendations": [
+			"streetsidesoftware.code-spell-checker",
+			"probe-rs.probe-rs-debugger",
+			"tamasfe.even-better-toml",
+			"yzhang.markdown-all-in-one",
+			"davidanson.vscode-markdownlint",
+			"rust-lang.rust-analyzer"
+		]
+	}
+}

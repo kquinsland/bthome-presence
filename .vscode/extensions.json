@@ -1,0 +1,10 @@
+{
+    "recommendations": [
+        "streetsidesoftware.code-spell-checker",
+        "probe-rs.probe-rs-debugger",
+        "tamasfe.even-better-toml",
+        "yzhang.markdown-all-in-one",
+        "davidanson.vscode-markdownlint",
+        "rust-lang.rust-analyzer"
+    ]
+}
